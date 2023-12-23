@@ -10,3 +10,6 @@ pip install requests
 pip install lxml
 ```
 The lxml parser helps nvaigate through HTML errors. From the [Beautiful Soup Documentation](https://beautiful-soup-4.readthedocs.io/en/latest/#installing-a-parser), the lxml parser is fast, lenient, and requires an external C dependency. Alternatively, you can use html5lib.
+
+### Video Resources
+View [this playlist](https://youtube.com/playlist?list=PLme1l1JJg0cVSfLz0Eq-XRdWkjEEZN3c1&si=QgImmQdSn-TvKgJ5) to learn the technologies used in this project.
