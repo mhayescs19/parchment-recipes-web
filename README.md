@@ -1,4 +1,9 @@
 # parchment-recipes-web
+## Instructions to Run
+```
+pip install requirements.txt
+python scrape.py
+```
 ## Development
 ### Project Setup
 This Python project uses Beautiful Soup 4 and other related packages to parse recipe sites for the title, serving size, preparation time, ingredients, and directions from a given URL link.
