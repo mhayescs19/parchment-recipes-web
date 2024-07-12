@@ -1,5 +1,26 @@
 # Development Docs
 This guide will track the development of the parchment recipes Spring backend in Java.
+
+## How to Track Development
+In this project, [GitHub Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects) will track progress. Sprints will be scheduled with milestones and issues will be placed in a Kanban board.  
+
+I will be using the following issue template which I have derived from [Atlassian](https://community.atlassian.com/t5/Jira-articles/How-to-write-a-useful-Jira-ticket/ba-p/2147004) and GitHub's built-in issue template suggestions:
+
+```markdown
+**Objective**
+Summarize the new feature with a user story or a description.
+
+**Acceptance Criteria**  
+List the criteria necessary for the feature to be added properly.
+
+**Tasks**  
+- [ ] Task 1
+- [ ] Task 2
+
+**Extra Details**  
+Add any other context or screenshots about the feature request here.
+```
+
 ## Configure Spring Initializr
 
 ## Installing MySQL Local Instance
