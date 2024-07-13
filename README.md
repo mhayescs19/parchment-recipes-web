@@ -22,11 +22,12 @@ Add any other context or screenshots about the feature request here.
 ```
 
 ## Configure Spring Initializr
+Access the [spring initializr](https://start.spring.io/#!type=maven-project&language=java&platformVersion=3.3.1&packaging=jar&jvmVersion=17&groupId=com.example&artifactId=demo&name=demo&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.demo&dependencies=web,lombok,mysql,data-jpa) and configure with Java and Maven to manage dependencies. This project uses Spring Web, Spring Data JPA, MySQL Driver, and Lombok.
 
 ## Installing MySQL Local Instance
-Download MySQL community for your machine specifications, then install. On macOS, toggling of the database is visible in the system preferences panel.  
+First, download MySQL community for your machine specifications and install. On macOS, toggling of the database is visible in the system preferences panel.  
 
-Next, access MySQL by using the `mysql` command. Note that MySQL is **not** immediately added to the `PATH` variable. Notice that using the following bash command will not work if you are not at `/usr/local/mysql-version_number-os-architecture`.
+Next, access MySQL by using the `mysql` command. Note that MySQL is **not** immediately added to the `PATH` variable. Notice that using the following terminal command will not work if you are not at `/usr/local/mysql-version_number-os-architecture`.
 ```sh
 mysql -u root -p
 ```
