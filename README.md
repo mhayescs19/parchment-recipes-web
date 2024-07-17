@@ -4,7 +4,7 @@ This guide will track the development of the parchment recipes Spring backend in
 ## How to Track Development
 In this project, [GitHub Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects) will track progress. Sprints will be scheduled with milestones and issues will be placed in a Kanban board.  
 
-I will be using the following issue template which I have derived from [Atlassian](https://community.atlassian.com/t5/Jira-articles/How-to-write-a-useful-Jira-ticket/ba-p/2147004) and GitHub's built-in issue template suggestions:
+I will be using the following issue template which I have derived from [Atlassian](https://community.atlassian.com/t5/Jira-articles/How-to-write-a-useful-Jira-ticket/ba-p/2147004), GitHub's built-in issue template suggestions, and [New Relic's Agile handbook](https://docs.newrelic.com/docs/agile-handbook/appendices/ticket-best-practices/#:~:text=Browser%20API%3A%20Update%20custom%20attribute%2Drelated%20docs%20or%20Distributed%20tracing%3A%20Add%20more%20detail%20about%20CAT%20relationship):
 
 ```markdown
 **Objective**
@@ -138,7 +138,8 @@ spring.datasource.password=password
 ```
 Also, provide the same details to the [IntelliJ database tool](https://www.jetbrains.com/help/idea/database-tool-window.html) to view the data, users, and other details that are helpful during development. Now, changes will be visible in the Database sidebar.
 ## Designing the SQL Model
-The constraints of SQL requires the use of relationships to model even moderately complex data. Atlassian provides an example of modeling data for an album. In SQL, a tracks, albums and artists table models the data optimizing to eliminate duplicate values. View the [Atlassian article](https://www.atlassian.com/data/sql/joins) to learn more about primary keys and foriegn keys.
+The constraints of SQL requires the use of relationships to model even moderately complex data. Atlassian provides an example of modeling data for an album. In SQL, a tracks, albums and artists table models the data optimizing to eliminate duplicate values. View the [Atlassian article](https://www.atlassian.com/data/sql/joins) to learn more about primary keys and foreign keys.
 
+In the first iteration of the project, the focus is on creating recipe persistence and successfully achieving CRUD operations on all portions of a recipe.
 
 
