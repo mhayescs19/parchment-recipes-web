@@ -142,4 +142,14 @@ The constraints of SQL requires the use of relationships to model even moderatel
 
 In the first iteration of the project, the focus is on creating recipe persistence and successfully achieving CRUD operations on all portions of a recipe.
 
+SQL uses structured tables which introduces constraints on how data is modeled. In the context of a recipe, because we do not know the varying size of the ingredient and direction lists before the recipe is created, multiple different tables must be associated with each other using relationships. An intuitive non-relational approach may include creating a table with a set number of columns (eg. 50 for ingredients and 50 for directions). While this would achieve persisting a recipe, a recipe with less than 50 ingredients or 50 directions would result in unused fields. 
+
+Before using tables with relationships, I created a single recipe table and api endpoint to access the database. Validating the basic table first abides by [incremental development practices](https://en.wikipedia.org/wiki/Iterative_and_incremental_development). During the first iteration, the recipe table follows the model below:
+
+| id | title          | source_url                                                             |
+|----|----------------|------------------------------------------------------------------------|
+| 1  | My Test Recipe | https://start.spring.io/                                               |
+| 2  | Test recipe 2  | https://www.jetbrains.com/help/idea/database-tool-window.html#overview |
+
+Now, experimentation with the simple recipe table can be executed along with unit tests for verification.
 
