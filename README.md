@@ -21,10 +21,10 @@ List the criteria necessary for the feature to be added properly.
 Add any other context or screenshots about the feature request here.
 ```
 
-## Configure Spring Initializr
+## Configure the Spring Initializr
 Access the [spring initializr](https://start.spring.io/#!type=maven-project&language=java&platformVersion=3.3.1&packaging=jar&jvmVersion=17&groupId=com.example&artifactId=demo&name=demo&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.demo&dependencies=web,lombok,mysql,data-jpa) and configure with Java and Maven to manage dependencies. This project uses Spring Web, Spring Data JPA, MySQL Driver, and Lombok.
 
-## Installing MySQL Local Instance
+## Installing a MySQL Local Instance
 First, download MySQL community for your machine specifications and install. On macOS, toggling of the database is visible in the system preferences panel.  
 
 Next, access MySQL by using the `mysql` command. Note that MySQL is **not** immediately added to the `PATH` variable. Notice that using the following terminal command will not work if you are not at `/usr/local/mysql-version_number-os-architecture`.
@@ -128,7 +128,7 @@ SHOW DATABASES;
 +--------------------+
 ```
 The new database `parchment_dev` is now ready for connection with Spring.
-## Connect MySQL Database to Spring
+## Connect the MySQL Database to Spring
 The MySQL database must be connected to Spring via `application.properties` file by listing the database url, username, and password. The database URL is composed with the host, port, and database name as follows: `jdbc:mysql://host:port/database_name`.
 ```
 spring.application.name=parchment-recipes-web
@@ -136,20 +136,73 @@ spring.datasource.url=jdbc:mysql://localhost:3306/parchment_dev
 spring.datasource.username=user_name
 spring.datasource.password=password
 ```
-Also, provide the same details to the [IntelliJ database tool](https://www.jetbrains.com/help/idea/database-tool-window.html) to view the data, users, and other details that are helpful during development. Now, changes will be visible in the Database sidebar.
+Also, provide the same details to the [IntelliJ database tool](https://www.jetbrains.com/help/idea/database-tool-window.html) to view the data, users, and other details that are helpful during development. Now, changes will be visible in the Database sidebar. During development, the toolbar will enable you to view tables (`columns, keys, foeign keys, and indexes`) and visual the schema with an [entity relationship diagram](https://www.lucidchart.com/pages/er-diagrams#:~:text=An%20Entity%20Relationship%20(ER)%20Diagram%20is%20a%20type%20of%20flowchart%20that%20illustrates%20how%20%E2%80%9Centities%E2%80%9D%20such%20as%20people%2C%20objects%20or%20concepts%20relate%20to%20each%20other%20within%20a%20system).
+
 ## Designing the SQL Model
-The constraints of SQL requires the use of relationships to model even moderately complex data. Atlassian provides an example of modeling data for an album. In SQL, a tracks, albums and artists table models the data optimizing to eliminate duplicate values. View the [Atlassian article](https://www.atlassian.com/data/sql/joins) to learn more about primary keys and foreign keys.
+The constraints of SQL requires the use of relationships to model even moderately complex data. Atlassian provides an example of modeling data for an album. In SQL, a respective tracks, albums and artists table models the data optimizing to eliminate duplicate values. View the [Atlassian article](https://www.atlassian.com/data/sql/joins) to learn more about primary keys and foreign keys.
 
 In the first iteration of the project, the focus is on creating recipe persistence and successfully achieving CRUD operations on all portions of a recipe.
 
 SQL uses structured tables which introduces constraints on how data is modeled. In the context of a recipe, because we do not know the varying size of the ingredient and direction lists before the recipe is created, multiple different tables must be associated with each other using relationships. An intuitive non-relational approach may include creating a table with a set number of columns (eg. 50 for ingredients and 50 for directions). While this would achieve persisting a recipe, a recipe with less than 50 ingredients or 50 directions would result in unused fields. 
 
-Before using tables with relationships, I created a single recipe table and api endpoint to access the database. Validating the basic table first abides by [incremental development practices](https://en.wikipedia.org/wiki/Iterative_and_incremental_development). During the first iteration, the recipe table follows the model below:
+### First Iteration: A Simple Entity
+
+Before using tables with relationships, I created a single recipe table and API endpoint to access the database. Validating the basic table first abides by [incremental development practices](https://en.wikipedia.org/wiki/Iterative_and_incremental_development). During the first iteration, the recipe table follows the model below:  
+
+**Recipe Table**
 
 | id | title          | source_url                                                             |
 |----|----------------|------------------------------------------------------------------------|
 | 1  | My Test Recipe | https://start.spring.io/                                               |
 | 2  | Test recipe 2  | https://www.jetbrains.com/help/idea/database-tool-window.html#overview |
 
-Now, experimentation with the simple recipe table can be executed along with unit tests for verification.
+Now, experimentation with the simple recipe table can be executed along with tests for verification.
+
+I created a simple endpoint to verify the functionality by the JSON response.
+
+```java
+@Autowired // field injection of bean
+private RecipeRepository recipeRepository;
+
+@GetMapping("/")
+public ResponseEntity<List<Recipe>> listRecipes() {
+    Recipe myRecipe = Recipe.builder()
+                        .title("My Test Recipe")
+                        .source_url("https://start.spring.io/")
+                        .build();
+
+    recipeRepository.save(myRecipe);
+
+    Recipe myRecipe2 = Recipe.builder()
+                        .title("Test recipe 2")
+                        .source_url("https://www.jetbrains.com/help/idea/database-tool-window.html#overview")
+                        .build();
+
+    recipeRepository.save(myRecipe2);
+
+    return new ResponseEntity<>(recipeRepository.findAll(), HttpStatus.OK);
+}
+```
+Valid JSON response:
+```json
+[
+  {
+    "id": 1,
+    "title": "My Test Recipe",
+    "source_url": "https://start.spring.io/"
+  },
+  {
+    "id": 2,
+    "title": "Test recipe 2",
+    "source_url": "https://www.jetbrains.com/help/idea/database-tool-window.html#overview"
+  }
+]
+```
+The objects above are created using the [Builder design pattern](https://medium.com/javarevisited/builder-design-pattern-in-java-3b3bfee438d9#:~:text=How%20to%20Implement%20Builder%20Design%20Pattern%20in%20Java%3F) which allows for the chaining of methods to set object attributes. The builder pattern will scale well to more clearly create objects with many different attributes.
+
+### Second Iteration: Add a Bidirectional One-To-Many Relationship
+
+
+
+
 

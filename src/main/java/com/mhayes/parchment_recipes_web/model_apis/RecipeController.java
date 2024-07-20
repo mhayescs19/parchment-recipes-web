@@ -59,17 +59,19 @@ public class RecipeController {
                 .amount(0.3)
                 .unit("cup")
                 .ingredientType("sugar")
+                .recipe(newRecipe2)
                 .build());
         ingredientList2.add(Ingredient.builder() // prep ingredients list
                 .amount(2.5)
                 .unit("teaspoons")
                 .ingredientType("vanilla")
+                .recipe(newRecipe2)
                 .build());
         ingredientList2.add(Ingredient.builder()
                         .amount(3.0)
-                        .unit("water")
+                        .unit("tablespoons")
                         .ingredientType("water")
-
+                        .recipe(newRecipe2)
                 .build());
         //ingredientRepository.save(ingredientList);
         newRecipe2.setIngredients(ingredientList2);
