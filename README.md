@@ -198,10 +198,126 @@ Valid JSON response:
   }
 ]
 ```
-The objects above are created using the [Builder design pattern](https://medium.com/javarevisited/builder-design-pattern-in-java-3b3bfee438d9#:~:text=How%20to%20Implement%20Builder%20Design%20Pattern%20in%20Java%3F) which allows for the chaining of methods to set object attributes. The builder pattern will scale well to more clearly create objects with many different attributes.
+The objects above are created using the [Builder design pattern](https://medium.com/javarevisited/builder-design-pattern-in-java-3b3bfee438d9#:~:text=How%20to%20Implement%20Builder%20Design%20Pattern%20in%20Java%3F) which allows for the chaining of methods to set object attributes. The builder pattern will scale well to clearly create objects with a large number of attributes.
 
-### Second Iteration: Add a Bidirectional One-To-Many Relationship
+### Second Iteration: Adding a Bidirectional One-To-Many Relationship
+In my design, for a recipe to have multiple ingredients, a one-to-many relationship enables for there to be a variable number of ingredients for a given recipe. Since both the recipe must know what the ingredients are and an ingredient must know what recipe it is a part of, a bidirectional relationship is necessary.  
 
+In the database, a one-to-many relationship will represent itself in two separate tables with a foreign key in the ingredient table referencing its respective recipe.
+
+**Recipe Table**
+
+| id | title            | source_url                                                             |
+|----|------------------|------------------------------------------------------------------------|
+| 1  | My Test Recipe   | https://start.spring.io/                                               |
+| 2  | My Test Recipe 2 | https://www.jetbrains.com/help/idea/database-tool-window.html#overview |
+
+**Ingredient Table**
+
+| id | amount | unit        | ingredient_type | recipe_id |
+|----|--------|-------------|-----------------|-----------|
+| 1  | 5      | cups        | flour           | 1         |
+| 2  | 2      | tablespoons | oil             | 1         |
+| 3  | 0.3    | cups        | sugar           | 2         |
+| 4  | 2.5    | teaspoons   | vanilla         | 2         |
+| 5  | 3      | tablespoons | water           | 2         |
+
+When data that contain relationships are serialized into JSON, a recursion issue causes infinite nesting. `@JsonManagedReference` is used to prevent recursive serialization. Read more about recursive serialization problem from [Alexander Obregon](https://medium.com/@AlexanderObregon/understanding-springs-jsonbackreference-and-jsonmanagedreference-annotations-783090468572#:~:text=The%20first%20Post,its%20Post%20objects.).
+```java
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
+public class Recipe {
+
+    /*
+        ...
+     */
+
+    /*
+    mapped by foreign key to one recipe
+    cascadeType ensures that if a recipe is deleted, all remaining ingredients are also removed
+    orphanRemoval ensures that there are no orphan ingredients without a valid FK to a recipe
+    jsonManagedReference - serializes the object forwards, in this case looking for ingredients
+     */
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Ingredient> ingredients = new ArrayList<>();
+}
+```
+```java
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
+public class Ingredient {
+
+    /*
+         ...
+     */
+
+   /*
+    JsonBackReference - prevents recursion on the reference entity, in this case the details of the recipe in the relationship is ignored to prevent infinite recursion
+    */
+    @ManyToOne
+    @JoinColumn(name = "recipe_id") // foreign key field
+    @JsonBackReference
+    private Recipe recipe;
+}
+```
+In summary, `@JsonManagedReference` serializes the relationship forwards and continually looks for more ingredients. Once an ingredient is located, `@JsonBackReference` ensures that another recipe is not nested inside of the ingredient causing infinite recursion.  
+
+Now, the serialized result of multiple objects looks like this:
+```json
+[
+  {
+    "id": 1,
+    "title": "My Test Recipe",
+    "source_url": "https://start.spring.io/",
+    "ingredients": [
+      {
+        "id": 1,
+        "amount": 5.0,
+        "unit": "cups",
+        "ingredientType": "flour"
+      },
+      {
+        "id": 2,
+        "amount": 2.0,
+        "unit": "tablespoons",
+        "ingredientType": "oil"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "My Test Recipe 2",
+    "source_url": "https://www.jetbrains.com/help/idea/database-tool-window.html#overview",
+    "ingredients": [
+      {
+        "id": 3,
+        "amount": 0.3,
+        "unit": "cup",
+        "ingredientType": "sugar"
+      },
+      {
+        "id": 4,
+        "amount": 2.5,
+        "unit": "teaspoons",
+        "ingredientType": "vanilla"
+      },
+      {
+        "id": 5,
+        "amount": 3.0,
+        "unit": "tablespoons",
+        "ingredientType": "water"
+      }
+    ]
+  }
+]
+```
 
 
 

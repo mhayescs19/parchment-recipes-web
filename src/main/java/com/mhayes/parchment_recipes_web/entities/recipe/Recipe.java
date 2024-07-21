@@ -29,6 +29,7 @@ public class Recipe {
     mapped by foreign key to one recipe
     cascadeType ensures that if a recipe is deleted, all remaining ingredients are also removed
     orphanRemoval ensures that there are no orphan ingredients without a valid FK to a recipe
+    jsonManagedReference - serializes the object forwards, in this case looking for ingredients
      */
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
