@@ -319,6 +319,11 @@ Now, the serialized result of multiple objects looks like this:
 ]
 ```
 
+## Creating the First Tests
+Now that we have code with sample data we need to verify that each component properly relates to the expected data. Let's create JUnit5 tests for Spring. [This video](https://www.youtube.com/watch?v=pNiRNRgi5Ws) by Dan Vega explains basic Spring testing.  
+
+I am narrowing my testing to focus on the persistence layer of the Spring application
+
 
 
 
