@@ -1,15 +1,18 @@
 package com.mhayes.parchment_recipes_web.model_apis;
 
 import com.mhayes.parchment_recipes_web.entities.recipe.*;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/recipe")
@@ -23,6 +26,16 @@ public class RecipeController {
 
     @GetMapping("/")
     public ResponseEntity<List<Recipe>> listRecipes() {
+        return new ResponseEntity<>(recipeRepository.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/ingredients")
+    public ResponseEntity<List<Ingredient>> listIngredients() {
+        return new ResponseEntity<>(ingredientRepository.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/create")
+    public ResponseEntity<List<Recipe>> createRecipes() {
         Recipe newRecipe = new Recipe();
         newRecipe.setTitle("My Test Recipe");
         newRecipe.setSource_url("https://start.spring.io/");
@@ -106,6 +119,32 @@ public class RecipeController {
         recipeRepository.save(newRecipe2);
 
         return new ResponseEntity<>(recipeRepository.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/deleteIngredient/{id}")
+    public ResponseEntity<Ingredient> deleteIngredientById(@PathVariable Long id) {
+        /*
+        Endpoint can receive an invalid id so verify that the id to delete exists
+         */
+        Optional<Ingredient> ingredient = ingredientRepository.findById(id);
+        if (ingredient.isPresent()) {
+            ingredientRepository.deleteById(id);
+            return new ResponseEntity<>(ingredient.get(), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/deleteRecipe/{id}")
+    public ResponseEntity<Recipe> deleteRecipeById(@PathVariable Long id) {
+
+        Optional<Recipe> recipe = recipeRepository.findById(id);
+        if (recipe.isPresent()) {
+            recipeRepository.deleteById(id);
+            return new ResponseEntity<>(recipe.get(), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
 
