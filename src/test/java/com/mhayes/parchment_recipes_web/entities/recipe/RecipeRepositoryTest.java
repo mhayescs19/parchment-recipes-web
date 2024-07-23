@@ -19,6 +19,12 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/*
+DataJpaTest - disables all autoconfiguration except those essential for JPA operations
+ActiveProfiles - test tells spring to use application-test.properties file
+AutoConfigureTestDatabase.Replace.NONE - spring not replace the current application datasource. since the ActiveProfiles annotation is set to "test, spring will use the DB that is configured in the properties(-test) file
+    typically,  AutoConfigureTestDatabase will try to configure an H2 in-memory database which we do not want
+ */
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -26,17 +32,11 @@ public class RecipeRepositoryTest {
     @Autowired
     private RecipeRepository recipeRepository;
 
-    @Autowired
-    private IngredientRepository ingredientRepository;
-
-    @Autowired
-    private TestEntityManager testEntityManager;
-
     private Recipe myTestRecipe1;
     private Recipe myTestRecipe2;
 
     @Test
-    @DisplayName("Verify ingredient foreign keys are set correctly")
+    @DisplayName("Verify ingredient foreign keys are set correctly") // provides the test a custom name in the test suite
     public void givenRecipeWithIngredients_whenSave_thenAllIngredientsHaveRecipeForeignKey() {
         /*
         Given: recipe with ingredients
