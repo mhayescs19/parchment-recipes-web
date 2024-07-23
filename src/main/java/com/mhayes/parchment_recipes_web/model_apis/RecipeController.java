@@ -1,9 +1,6 @@
 package com.mhayes.parchment_recipes_web.model_apis;
 
-import com.mhayes.parchment_recipes_web.entities.recipe.Ingredient;
-import com.mhayes.parchment_recipes_web.entities.recipe.IngredientRepository;
-import com.mhayes.parchment_recipes_web.entities.recipe.Recipe;
-import com.mhayes.parchment_recipes_web.entities.recipe.RecipeRepository;
+import com.mhayes.parchment_recipes_web.entities.recipe.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +33,7 @@ public class RecipeController {
                         .amount(5.0)
                         .unit("cups")
                         .ingredientType("flour")
-                        .recipe(newRecipe)
+                        .recipe(newRecipe) // set foreign key recipe back to recipe
                     .build());
         ingredientList.add(Ingredient.builder() // prep ingredients list
                 .amount(2.0)
@@ -44,8 +41,19 @@ public class RecipeController {
                 .ingredientType("oil")
                 .recipe(newRecipe)
                 .build());
-        //ingredientRepository.save(ingredientList);
+
+        List<Direction> directionList = new ArrayList<>();
+        directionList.add(Direction.builder()
+                        .content("Mix flour and oil until combined.")
+                        .recipe(newRecipe)
+                .build());
+        directionList.add(Direction.builder()
+                .content("Heat on medium for 5 minutes and serve immediately.")
+                .recipe(newRecipe)
+                .build());
+
         newRecipe.setIngredients(ingredientList);
+        newRecipe.setDirections(directionList);
 
         recipeRepository.save(newRecipe);
 
@@ -73,57 +81,29 @@ public class RecipeController {
                         .ingredientType("water")
                         .recipe(newRecipe2)
                 .build());
-        //ingredientRepository.save(ingredientList);
+
+        List<Direction> directionList2 = new ArrayList<>();
+        directionList2.add(Direction.builder()
+                .content("Combine sugar, vanilla, and water in a medium bowl.")
+                .recipe(newRecipe2)
+                .build());
+        directionList2.add(Direction.builder()
+                .content("Place in the refrigerator for 24 hours.")
+                .recipe(newRecipe2)
+                .build());
+        directionList2.add(Direction.builder()
+                .content("Preheat the oven to 350° F.")
+                .recipe(newRecipe2)
+                .build());
+        directionList2.add(Direction.builder()
+                .content("Let mixture rest until room temperature is reached. Cook for 15 minutes until sugar is golden. Serve over oats.")
+                .recipe(newRecipe2)
+                .build());
+
         newRecipe2.setIngredients(ingredientList2);
+        newRecipe2.setDirections(directionList2);
 
         recipeRepository.save(newRecipe2);
-
-        /*newRecipe.addIngredient(Ingredient.builder() // prep ingredients list
-                .amount(5.0)
-                .unit("cups")
-                .ingredientType("flour")
-                .recipe(newRecipe)
-                .build());
-        newRecipe.addIngredient(Ingredient.builder() // prep ingredients list
-                .amount(2.0)
-                .unit("tablespoons")
-                .ingredientType("oil")
-                .recipe(newRecipe)
-                .build());
-
-        Recipe newRecipe2 = Recipe.builder()
-                .title("Test recipe 2")
-                .source_url("https://www.jetbrains.com/help/idea/database-tool-window.html#overview")
-                .build();
-        newRecipe2.addIngredient(Ingredient.builder() // prep ingredients list
-                .amount(0.3)
-                .unit("cup")
-                .ingredientType("sugar")
-                .build());
-        newRecipe2.addIngredient(Ingredient.builder() // prep ingredients list
-                .amount(2.5)
-                .unit("teaspoons")
-                .ingredientType("vanilla")
-                .build());
-
-        List<Ingredient> ingredientList2 = new ArrayList<>();
-
-        ingredientList2.add(Ingredient.builder() // prep ingredients list
-                .amount(0.3)
-                .unit("cup")
-                .ingredientType("sugar")
-                .recipe(newRecipe2)
-                .build());
-        ingredientList2.add(Ingredient.builder() // prep ingredients list
-                .amount(2.5)
-                .unit("teaspoons")
-                .ingredientType("vanilla")
-                .recipe(newRecipe2)
-                .build());
-
-        //newRecipe2.addIngredient(ingredientList2);
-
-        recipeRepository.save(newRecipe2);*/
 
         return new ResponseEntity<>(recipeRepository.findAll(), HttpStatus.OK);
     }

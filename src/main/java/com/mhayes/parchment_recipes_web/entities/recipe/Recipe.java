@@ -26,7 +26,7 @@ public class Recipe {
     // title, source_url, author, description, prep_time, cook_time, total_time, yield, ingredients, instructions, foot_notes, user_notes
 
     /*
-    mapped by foreign key to one recipe
+    mapped by foreign key to one recipe; recipe is the entity class attribute name in ingredient
     cascadeType ensures that if a recipe is deleted, all remaining ingredients are also removed
     orphanRemoval ensures that there are no orphan ingredients without a valid FK to a recipe
     jsonManagedReference - serializes the object forwards, in this case looking for ingredients
@@ -34,6 +34,10 @@ public class Recipe {
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Ingredient> ingredients = new ArrayList<>();
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Direction> directions = new ArrayList<>();
 
 
     public void addIngredient(Ingredient ingredient) {
