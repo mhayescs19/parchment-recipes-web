@@ -4,11 +4,9 @@ import com.mhayes.parchment_recipes_web.entities.recipe.*;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +27,60 @@ public class RecipeController {
         return new ResponseEntity<>(recipeRepository.findAll(), HttpStatus.OK);
     }
 
+    @PostMapping("/")
+    public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) { // payload is a recipe json object
+        //recipe.getIngredients().forEach(ingredient -> ingredient.setRecipe(recipe)); // set fk in ingredient
+        //recipe.getDirections().forEach(ingredient -> ingredient.setRecipe(recipe));
+        recipeRepository.save(recipe);
+        return new ResponseEntity<>(recipe, HttpStatus.OK);
+    }
+
+    @PutMapping("/")
+    public ResponseEntity<Recipe> updateRecipe(@RequestBody Recipe recipe) { // update entire recipe
+        recipeRepository.save(recipe);
+        return new ResponseEntity<>(recipe, HttpStatus.OK);
+    }
+
+    // alt idea  = send a code in the packet of information to signal what attributes of the ingredient is bein updated. use the code to immediately update the information
+    @PatchMapping("/ingredient/")
+    public ResponseEntity<Ingredient> updateIngredient(@RequestBody Ingredient ingredientToUpdate) {
+        Optional<Ingredient> persistedIngredient = ingredientRepository.findById(ingredientToUpdate.getId()); // search for ingredient
+
+        /*
+        private Double amount;
+
+        private String unit;
+
+        private String ingredientType;
+         */
+        if (persistedIngredient.isPresent()) { // validate that ingredient is found in database
+            Ingredient validIngredient = persistedIngredient.get();
+            /*
+            Access the attributes of Ingredient
+             */
+            Double amount = ingredientToUpdate.getAmount();
+            String unit = ingredientToUpdate.getUnit();
+            String ingredientType = ingredientToUpdate.getIngredientType();
+            /*
+            If the property is non-null, then update the value
+             */
+            if (ingredientToUpdate.getAmount() != null) validIngredient.setAmount(ingredientToUpdate.getAmount());
+            if (ingredientToUpdate.getUnit() != null) validIngredient.setUnit(ingredientToUpdate.getUnit());
+            if (ingredientToUpdate.getIngredientType() !=  null) validIngredient.setIngredientType(ingredientToUpdate.getIngredientType());
+
+            ingredientRepository.save(validIngredient);
+
+            return new ResponseEntity<>(validIngredient, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
     @GetMapping("/ingredients")
     public ResponseEntity<List<Ingredient>> listIngredients() {
         return new ResponseEntity<>(ingredientRepository.findAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/create")
+    @PostMapping("/create")
     public ResponseEntity<List<Recipe>> createRecipes() {
         Recipe newRecipe = new Recipe();
         newRecipe.setTitle("My Test Recipe");
@@ -118,10 +164,10 @@ public class RecipeController {
 
         recipeRepository.save(newRecipe2);
 
-        return new ResponseEntity<>(recipeRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(recipeRepository.findAll(), HttpStatus.CREATED);
     }
 
-    @GetMapping("/deleteIngredient/{id}")
+    @DeleteMapping("/deleteIngredient/{id}")
     public ResponseEntity<Ingredient> deleteIngredientById(@PathVariable Long id) {
         /*
         Endpoint can receive an invalid id so verify that the id to delete exists
@@ -135,7 +181,7 @@ public class RecipeController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("/deleteRecipe/{id}")
+    @PatchMapping("/deleteRecipe/{id}")
     public ResponseEntity<Recipe> deleteRecipeById(@PathVariable Long id) {
 
         Optional<Recipe> recipe = recipeRepository.findById(id);
