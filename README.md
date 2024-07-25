@@ -438,7 +438,16 @@ Take note of the configuration that is applied through the annotations on the te
 - `@ActiveProfiles` signals to Spring to reference the `application-test.properties` file which has a JDBC connection to a test database.
 - `@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)` informs Spring that the current application datasource should not be replaced. Typically, AutoConfigureTestDatabase will try to configure an H2 in-memory database which is no the desired functionality there is a connection to test database in the `application-test.properties` file.
 
-In my development, I found that the standard .properties configuration (including the use of MySQL) was causing errors in the generation of the H2 in-memory database which led to me to configuration a separate local MySQL database strictly for testing.
+In my development, I found that the standard .properties configuration (including the use of MySQL) was causing errors in the generation of the H2 in-memory database which led to me to configuration a separate local MySQL database strictly for testing.  
+
+## Types of HTTP Requests
+- `GET`: read of data/resource (`@GetMapping`)
+- `POST`: creates a new piece of data/resource (`@PostMapping`)
+- `PUT`: Updates an **entire** resource or creates one if the data is not present (`@PutMapping`)
+- `PATCH`: Updates a **portion** of the resource. The data to update is passed. (`@PatchMapping`)
+- `DELETE`: delete data/resource (`@DeleteMapping`)
+
+Resources: [FreeCodeCamp](https://www.freecodecamp.org/news/http-request-methods-explained/) | [Suhas Chatekar](https://medium.com/@suhas_chatekar/why-you-should-use-the-recommended-http-methods-in-your-rest-apis-981359828bf7)
 
 
 

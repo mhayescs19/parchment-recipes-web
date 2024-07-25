@@ -3,6 +3,7 @@ package com.mhayes.parchment_recipes_web.entities.recipe;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,22 @@ public class Recipe {
     private String title;
 
     private String source_url;
-    // title, source_url, author, description, prep_time, cook_time, total_time, yield, ingredients, instructions, foot_notes, user_notes
+
+    private String author;
+
+    private String description;
+
+    private Time prepTime;
+
+    private Time cookTime;
+
+    // totalTime is calculated from prep and cook time
+
+    private String servingYield;
+
+    private String footNotes; // notes included from the original recipe
+
+    private String userNotes; // a user's personal notes
 
     /*
     mapped by foreign key to one recipe; recipe is the entity class attribute name in ingredient
