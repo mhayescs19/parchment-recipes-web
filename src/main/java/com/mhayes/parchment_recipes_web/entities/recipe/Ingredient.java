@@ -27,7 +27,7 @@ public class Ingredient {
     private String ingredientType;
 
     /*
-    JsonBackReference - prevents recursion on the reference entity, in this case the details of the recipe in the relationship is ignored to prevent infinite recursion
+    JsonBackReference - prevents recursion on the reference entity, in this case the details of the recipe in the relationship are ignored to prevent infinite recursion
     */
     @ManyToOne
     @JoinColumn(name = "recipe_id") // foreign key field
