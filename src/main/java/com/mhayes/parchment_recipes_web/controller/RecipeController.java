@@ -1,11 +1,9 @@
-package com.mhayes.parchment_recipes_web.model_apis;
+package com.mhayes.parchment_recipes_web.controller;
 
-import com.mhayes.parchment_recipes_web.entities.recipe.*;
-import com.mhayes.parchment_recipes_web.model_apis.DTO.IngredientDto;
-import org.apache.coyote.Response;
+import com.mhayes.parchment_recipes_web.dto.IngredientDto;
+import com.mhayes.parchment_recipes_web.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +42,7 @@ public class RecipeController {
         return new ResponseEntity<>(recipe, HttpStatus.OK);
     }
 
-    // alt idea  = send a code in the packet of information to signal what attributes of the ingredient is bein updated. use the code to immediately update the information
+    // alt idea  = send a code in the packet of information to signal what attributes of the ingredient is being updated. use the code to immediately update the information
 
     /**
      * Update an existing ingredient's amount, unit, or ingredient type

@@ -1,7 +1,5 @@
-package com.mhayes.parchment_recipes_web.model_apis.DTO;
+package com.mhayes.parchment_recipes_web.dto;
 
-import com.mhayes.parchment_recipes_web.entities.recipe.Ingredient;
-import com.mhayes.parchment_recipes_web.entities.recipe.Recipe;
 import lombok.Getter;
 import lombok.Setter;
 
