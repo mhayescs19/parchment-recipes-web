@@ -1,7 +1,9 @@
 package com.mhayes.parchment_recipes_web.controller;
 
 import com.mhayes.parchment_recipes_web.dto.IngredientDto;
+import com.mhayes.parchment_recipes_web.dto.RecipeDto;
 import com.mhayes.parchment_recipes_web.model.*;
+import com.mhayes.parchment_recipes_web.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-// api names should be nouns for CRUD, not verbs!
 
 @RestController
 @RequestMapping("/api/recipe")
@@ -23,23 +23,25 @@ public class RecipeController {
     @Autowired
     private IngredientRepository ingredientRepository;
 
+    @Autowired
+    private RecipeService recipeService;
+
     @GetMapping("/")
     public ResponseEntity<List<Recipe>> listRecipes() {
-        return new ResponseEntity<>(recipeRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(recipeService.listAllRecipes(), HttpStatus.OK);
     }
 
     @PostMapping("/")
     public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) { // payload is a recipe json object
         //recipe.getIngredients().forEach(ingredient -> ingredient.setRecipe(recipe)); // set fk in ingredient
         //recipe.getDirections().forEach(ingredient -> ingredient.setRecipe(recipe));
-        recipeRepository.save(recipe);
-        return new ResponseEntity<>(recipe, HttpStatus.OK);
+        return new ResponseEntity<>(recipeService.createRecipe(recipe), HttpStatus.OK);
     }
 
     @PutMapping("/")
     public ResponseEntity<Recipe> updateRecipe(@RequestBody Recipe recipe) { // update entire recipe
-        recipeRepository.save(recipe);
-        return new ResponseEntity<>(recipe, HttpStatus.OK);
+
+        return new ResponseEntity<>(recipeService.updateRecipe(recipe), HttpStatus.OK);
     }
 
     // alt idea  = send a code in the packet of information to signal what attributes of the ingredient is being updated. use the code to immediately update the information
@@ -49,71 +51,28 @@ public class RecipeController {
      * @param ingredientToUpdate update ingredient in JSON
      * @return updated ingredient persisted in the recipe or not found status
      */
-    @PatchMapping("/ingredient")
-    public ResponseEntity<Ingredient> updateIngredient(@RequestBody Ingredient ingredientToUpdate) {
-        Optional<Ingredient> persistedIngredient = ingredientRepository.findById(ingredientToUpdate.getId()); // search for ingredient
-
-        /*
-        private Double amount;
-
-        private String unit;
-
-        private String ingredientType;
-         */
-        if (persistedIngredient.isPresent()) { // validate that ingredient is found in database
-            Ingredient validIngredient = persistedIngredient.get();
-            /*
-            Access the attributes of Ingredient
-             */
-            Double amount = ingredientToUpdate.getAmount();
-            String unit = ingredientToUpdate.getUnit();
-            String ingredientType = ingredientToUpdate.getIngredientType();
-            /*
-            If the property is non-null, then update the value
-             */
-            if (ingredientToUpdate.getAmount() != null) validIngredient.setAmount(ingredientToUpdate.getAmount());
-            if (ingredientToUpdate.getUnit() != null) validIngredient.setUnit(ingredientToUpdate.getUnit());
-            if (ingredientToUpdate.getIngredientType() !=  null) validIngredient.setIngredientType(ingredientToUpdate.getIngredientType());
-
-            ingredientRepository.save(validIngredient);
-
-            return new ResponseEntity<>(validIngredient, HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PatchMapping("/{ingredientId}/ingredient")
+    public ResponseEntity<IngredientDto> updateIngredient(@PathVariable Long ingredientId, @RequestBody IngredientDto ingredientToUpdate) {
+        return recipeService.updateIngredient(ingredientId, ingredientToUpdate);
     }
 
     /**
      * add new ingredient(s) to a recipe
+     * @param recipeId
      * @param ingredient
      * @return
      */
-    @PostMapping("/ingredient")
-    public ResponseEntity<Ingredient> addIngredient(@RequestBody IngredientDto ingredient) {
-        Optional<Recipe> persistedRecipe = recipeRepository.findById(ingredient.getRecipeId());
-
-        if (persistedRecipe.isPresent()) { // validate that recipe FK in JSON is a real foreign key
-            Ingredient newIngredient = Ingredient.builder()
-                    .amount(ingredient.getAmount())
-                    .unit(ingredient.getUnit())
-                    .ingredientType(ingredient.getIngredientType())
-                    .recipe(persistedRecipe.get())
-                    .build();
-
-            ingredientRepository.save(newIngredient);
-
-            return new ResponseEntity<>(newIngredient, HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PostMapping("/{recipeId}/ingredient")
+    public ResponseEntity<IngredientDto> addIngredient(@PathVariable Long recipeId, @RequestBody IngredientDto ingredient) {
+        return recipeService.addIngredient(recipeId, ingredient);
     }
 
-    @PostMapping("/ingredient/list")
-    public ResponseEntity<List<Ingredient>> addIngredients(@RequestBody List<IngredientDto> ingredientDtos) {
+    @PostMapping("/{recipeId}/ingredient/list")
+    public ResponseEntity<List<Ingredient>> addIngredients(@PathVariable Long recipeId, @RequestBody List<IngredientDto> ingredientDtos) {
         List<Ingredient> persistedIngredients = new ArrayList<>();
 
         for (IngredientDto ingredientDto : ingredientDtos) {
-            Optional<Recipe> persistedRecipe = recipeRepository.findById(ingredientDto.getRecipeId());
+            Optional<Recipe> persistedRecipe = recipeRepository.findById(recipeId);
 
             if (persistedRecipe.isPresent()) { // validate that recipe FK in JSON is a real foreign key
                 Ingredient newIngredient = Ingredient.builder()
@@ -253,3 +212,7 @@ public class RecipeController {
 
 
 }
+
+// api path names should be nouns for CRUD, not verbs!
+// 404 - formatted payload, but does not exist
+// 400 - request is malformed
