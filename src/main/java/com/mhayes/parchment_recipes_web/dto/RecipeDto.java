@@ -3,7 +3,7 @@ package com.mhayes.parchment_recipes_web.dto;
 import java.sql.Time;
 import java.util.List;
 
-public class RecipeDto {
+public class RecipeDto extends ErrorDto {
     private Long id; // unique identifier
 
     private String title;

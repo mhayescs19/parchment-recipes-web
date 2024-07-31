@@ -1,12 +1,13 @@
 package com.mhayes.parchment_recipes_web.controller;
 
 import com.mhayes.parchment_recipes_web.dto.IngredientDto;
-import com.mhayes.parchment_recipes_web.dto.RecipeDto;
 import com.mhayes.parchment_recipes_web.model.*;
 import com.mhayes.parchment_recipes_web.service.RecipeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -33,63 +34,69 @@ public class RecipeController {
 
     @PostMapping("/")
     public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) { // payload is a recipe json object
-        //recipe.getIngredients().forEach(ingredient -> ingredient.setRecipe(recipe)); // set fk in ingredient
-        //recipe.getDirections().forEach(ingredient -> ingredient.setRecipe(recipe));
         return new ResponseEntity<>(recipeService.createRecipe(recipe), HttpStatus.OK);
     }
 
     @PutMapping("/")
     public ResponseEntity<Recipe> updateRecipe(@RequestBody Recipe recipe) { // update entire recipe
-
         return new ResponseEntity<>(recipeService.updateRecipe(recipe), HttpStatus.OK);
     }
 
     // alt idea  = send a code in the packet of information to signal what attributes of the ingredient is being updated. use the code to immediately update the information
 
     /**
-     * Update an existing ingredient's amount, unit, or ingredient type
-     * @param ingredientToUpdate update ingredient in JSON
-     * @return updated ingredient persisted in the recipe or not found status
+     * Update an existing ingredient's amount, unit, and/or ingredient type.
+     * @param ingredientToUpdate deserialized JSON payload that contains <strong>only</strong> the edits requested for a persisted ingredient
+     * @return updated ingredient persisted in the recipe or resource not found status
      */
     @PatchMapping("/{ingredientId}/ingredient")
-    public ResponseEntity<IngredientDto> updateIngredient(@PathVariable Long ingredientId, @RequestBody IngredientDto ingredientToUpdate) {
-        return recipeService.updateIngredient(ingredientId, ingredientToUpdate);
+    public ResponseEntity<IngredientDto> updateIngredient(@PathVariable Long ingredientId, @Valid @RequestBody IngredientDto ingredientToUpdate) {
+        //try {
+            return new ResponseEntity<>(recipeService.updateIngredient(ingredientId, ingredientToUpdate), HttpStatus.OK);
+        /*} catch (ResourceNotFoundException e) {
+            String message = e.getMessage();
+            IngredientDto ingredientNotFound = new IngredientDto();
+            ingredientNotFound.setErrorMessage(message);
+
+            return new ResponseEntity<>(ingredientNotFound, HttpStatus.NOT_FOUND);
+        }*/
+        //todo handle malformed payload. resource: https://medium.com/@tericcabrel/validate-request-body-and-parameter-in-spring-boot-53ca77f97fe9
     }
 
     /**
-     * add new ingredient(s) to a recipe
-     * @param recipeId
-     * @param ingredient
-     * @return
+     * add a new ingredient to an existing recipe
+     * @param recipeId id for recipe to host the new ingredient
+     * @param ingredient deserialized JSON payload of ingredient contents
+     * @return new ingredient persisted in the recipe or resource not found status
      */
     @PostMapping("/{recipeId}/ingredient")
     public ResponseEntity<IngredientDto> addIngredient(@PathVariable Long recipeId, @RequestBody IngredientDto ingredient) {
-        return recipeService.addIngredient(recipeId, ingredient);
+        //try {
+            return new ResponseEntity<>(recipeService.addIngredient(recipeId, ingredient), HttpStatus.OK);
+        /*} catch (ResourceNotFoundException e) {
+            String message = e.getMessage();
+            IngredientDto recipeNotFound = new IngredientDto();
+            recipeNotFound.setErrorMessage(message);
+            return new ResponseEntity<>(recipeNotFound, HttpStatus.NOT_FOUND);
+        }*/
     }
 
     @PostMapping("/{recipeId}/ingredient/list")
-    public ResponseEntity<List<Ingredient>> addIngredients(@PathVariable Long recipeId, @RequestBody List<IngredientDto> ingredientDtos) {
-        List<Ingredient> persistedIngredients = new ArrayList<>();
-
+    public ResponseEntity<?> addIngredients(@PathVariable Long recipeId, @Validated @RequestBody List<IngredientDto> ingredientDtos) {
+        //List<IngredientDto> persistedIngredients = new ArrayList<>();
+        //persistedIngredients.forEach(ingredientDto -> recipeService.addIngredient(recipeId, ingredientDto));
         for (IngredientDto ingredientDto : ingredientDtos) {
-            Optional<Recipe> persistedRecipe = recipeRepository.findById(recipeId);
-
-            if (persistedRecipe.isPresent()) { // validate that recipe FK in JSON is a real foreign key
-                Ingredient newIngredient = Ingredient.builder()
-                        .amount(ingredientDto.getAmount())
-                        .unit(ingredientDto.getUnit())
-                        .ingredientType(ingredientDto.getIngredientType())
-                        .recipe(persistedRecipe.get())
-                        .build();
-
-                ingredientRepository.save(newIngredient);
-                persistedIngredients.add(newIngredient);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            //try {
+                recipeService.addIngredient(recipeId, ingredientDto);
+            /*} catch (ResourceNotFoundException e) {
+                String message = e.getMessage();
+                IngredientDto recipeNotFound = new IngredientDto();
+                recipeNotFound.setErrorMessage(message);
+                return new ResponseEntity<>(recipeNotFound, HttpStatus.NOT_FOUND);
+            }*/
         }
 
-        return new ResponseEntity<>(persistedIngredients,HttpStatus.OK);
+        return new ResponseEntity<>(ingredientDtos,HttpStatus.OK);
     }
 
     @GetMapping("/ingredients")
