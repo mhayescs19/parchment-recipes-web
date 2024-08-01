@@ -41,6 +41,15 @@ public class RecipeService {
         return recipeRepository.save(recipe);
     }
 
+    public void deleteRecipe(Long recipeId) {
+        Optional<Recipe> recipe = recipeRepository.findById(recipeId);
+        if (recipe.isPresent()) {
+            recipeRepository.deleteById(recipeId);
+        } else {
+            throw new ResourceNotFoundException(Resource.Recipe, recipeId);
+        }
+    }
+
     /**
      *
      * @param recipeId
@@ -105,8 +114,19 @@ public class RecipeService {
         }
 
         throw new ResourceNotFoundException(Resource.Ingredient, ingredientId);
-
-        //Todo error handling for malformed payload
     }
-    //public ResponseEntity<Recipe>
+
+    public void deleteIngredient(Long ingredientId) {
+        Optional<Ingredient> ingredient = ingredientRepository.findById(ingredientId);
+
+        if (ingredient.isPresent()) {
+            ingredientRepository.deleteById(ingredientId);
+        } else {
+            throw new ResourceNotFoundException(Resource.Ingredient, ingredientId);
+        }
+    }
+
+    public List<Ingredient> listAllIngredients() {
+        return ingredientRepository.findAll();
+    }
 }
