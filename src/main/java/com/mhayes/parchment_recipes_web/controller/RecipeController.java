@@ -5,6 +5,7 @@ import com.mhayes.parchment_recipes_web.dto.RecipeDto;
 import com.mhayes.parchment_recipes_web.model.*;
 import com.mhayes.parchment_recipes_web.service.RecipeService;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class RecipeController {
         return new ResponseEntity<>(recipeService.listAllRecipes(), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/", consumes = "application/json")
+    @PostMapping(value = "/")
     public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) { // payload is a recipe json object
         return new ResponseEntity<>(recipeService.createRecipe(recipe), HttpStatus.OK);
     }
@@ -41,6 +42,11 @@ public class RecipeController {
     public ResponseEntity<HttpStatus> deleteRecipe(@PathVariable Long recipeId) {
         recipeService.deleteRecipe(recipeId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/{recipeId}")
+    public ResponseEntity<Recipe> getRecipe(@PathVariable Long recipeId) {
+        return new ResponseEntity<>(recipeService.getRecipe(recipeId), HttpStatus.OK);
     }
 
     /**

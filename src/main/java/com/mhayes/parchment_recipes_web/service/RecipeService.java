@@ -10,6 +10,7 @@ import com.mhayes.parchment_recipes_web.model.RecipeRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,6 @@ public class RecipeService {
     }
 
     public Recipe createRecipe(Recipe recipe) {
-
         return recipeRepository.save(recipe);
     }
 
@@ -45,6 +45,15 @@ public class RecipeService {
         Optional<Recipe> recipe = recipeRepository.findById(recipeId);
         if (recipe.isPresent()) {
             recipeRepository.deleteById(recipeId);
+        } else {
+            throw new ResourceNotFoundException(Resource.Recipe, recipeId);
+        }
+    }
+
+    public Recipe getRecipe(@PathVariable Long recipeId) {
+        Optional<Recipe> recipe = recipeRepository.findById(recipeId);
+        if (recipe.isPresent()) {
+            return recipe.get();
         } else {
             throw new ResourceNotFoundException(Resource.Recipe, recipeId);
         }

@@ -20,6 +20,7 @@ public class Direction {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(length = 500)
     private String content;
 
     /*
