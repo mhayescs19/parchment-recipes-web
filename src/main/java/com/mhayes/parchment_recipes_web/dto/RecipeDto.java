@@ -1,14 +1,25 @@
 package com.mhayes.parchment_recipes_web.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.sql.Time;
 import java.util.List;
 
+@Getter
+@Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Data
 public class RecipeDto extends ErrorDto {
     private Long id; // unique identifier
 
     private String title;
 
     private String sourceUrl;
+
+    private String imageUrl;
 
     private String author;
 

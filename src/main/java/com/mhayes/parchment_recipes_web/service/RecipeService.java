@@ -1,6 +1,7 @@
 package com.mhayes.parchment_recipes_web.service;
 
 import com.mhayes.parchment_recipes_web.dto.IngredientDto;
+import com.mhayes.parchment_recipes_web.dto.RecipeDto;
 import com.mhayes.parchment_recipes_web.dto.enums.Resource;
 import com.mhayes.parchment_recipes_web.exception.ResourceNotFoundException;
 import com.mhayes.parchment_recipes_web.model.Ingredient;
@@ -123,6 +124,24 @@ public class RecipeService {
         }
 
         throw new ResourceNotFoundException(Resource.Ingredient, ingredientId);
+    }
+
+    public RecipeDto patchRecipe(Long recipeId, RecipeDto recipeUpdate) {
+        Optional<Recipe> persistedRecipe = recipeRepository.findById(recipeId);
+
+        if (persistedRecipe.isPresent()) {
+            Recipe validRecipe = persistedRecipe.get();
+
+            if (recipeUpdate.getTitle() != null) validRecipe.setTitle(recipeUpdate.getTitle());
+            if (recipeUpdate.getAuthor() != null) validRecipe.setAuthor(recipeUpdate.getAuthor());
+            if (recipeUpdate.getSourceUrl() != null) validRecipe.setSourceUrl(recipeUpdate.getSourceUrl());
+            if (recipeUpdate.getImageUrl() != null) validRecipe.setImageUrl(recipeUpdate.getImageUrl());
+            if (recipeUpdate.getDescription() != null) validRecipe.setDescription(recipeUpdate.getDescription());
+
+            return recipeUpdate;
+        }
+
+        throw new ResourceNotFoundException(Resource.Recipe, recipeId);
     }
 
     public void deleteIngredient(Long ingredientId) {

@@ -25,6 +25,8 @@ public class Recipe {
 
     private String sourceUrl;
 
+    private String imageUrl;
+
     private String author;
 
     @Column(length = 750)

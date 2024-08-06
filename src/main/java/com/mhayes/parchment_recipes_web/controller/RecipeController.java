@@ -38,6 +38,11 @@ public class RecipeController {
         return new ResponseEntity<>(recipeService.updateRecipe(recipe), HttpStatus.OK);
     }
 
+    @PatchMapping("/{recipeId}")
+    public ResponseEntity<RecipeDto> patchRecipe(@PathVariable Long recipeId, @Valid @RequestBody RecipeDto recipeUpdate) {
+        return new ResponseEntity<>(recipeService.patchRecipe(recipeId, recipeUpdate), HttpStatus.OK);
+    }
+
     @DeleteMapping("/{recipeId}")
     public ResponseEntity<HttpStatus> deleteRecipe(@PathVariable Long recipeId) {
         recipeService.deleteRecipe(recipeId);
