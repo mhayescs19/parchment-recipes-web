@@ -1,11 +1,15 @@
-package com.mhayes.parchment_recipes_web.model_apis;
+package com.mhayes.parchment_recipes_web.controller;
 
-import com.mhayes.parchment_recipes_web.entities.recipe.*;
+import com.mhayes.parchment_recipes_web.dto.IngredientDto;
+import com.mhayes.parchment_recipes_web.dto.RecipeDto;
+import com.mhayes.parchment_recipes_web.model.*;
+import com.mhayes.parchment_recipes_web.service.RecipeService;
+import jakarta.validation.Valid;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -16,70 +20,82 @@ import java.util.Optional;
 @RequestMapping("/api/recipe")
 public class RecipeController {
 
-    @Autowired // field injection of bean
-    private RecipeRepository recipeRepository;
-
     @Autowired
-    private IngredientRepository ingredientRepository;
+    private RecipeService recipeService;
 
     @GetMapping("/")
     public ResponseEntity<List<Recipe>> listRecipes() {
-        return new ResponseEntity<>(recipeRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(recipeService.listAllRecipes(), HttpStatus.OK);
     }
 
-    @PostMapping("/")
+    @PostMapping(value = "/")
     public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) { // payload is a recipe json object
-        //recipe.getIngredients().forEach(ingredient -> ingredient.setRecipe(recipe)); // set fk in ingredient
-        //recipe.getDirections().forEach(ingredient -> ingredient.setRecipe(recipe));
-        recipeRepository.save(recipe);
-        return new ResponseEntity<>(recipe, HttpStatus.OK);
+        return new ResponseEntity<>(recipeService.createRecipe(recipe), HttpStatus.OK);
     }
 
     @PutMapping("/")
     public ResponseEntity<Recipe> updateRecipe(@RequestBody Recipe recipe) { // update entire recipe
-        recipeRepository.save(recipe);
-        return new ResponseEntity<>(recipe, HttpStatus.OK);
+        return new ResponseEntity<>(recipeService.updateRecipe(recipe), HttpStatus.OK);
     }
 
-    // alt idea  = send a code in the packet of information to signal what attributes of the ingredient is bein updated. use the code to immediately update the information
-    @PatchMapping("/ingredient/")
-    public ResponseEntity<Ingredient> updateIngredient(@RequestBody Ingredient ingredientToUpdate) {
-        Optional<Ingredient> persistedIngredient = ingredientRepository.findById(ingredientToUpdate.getId()); // search for ingredient
+    @PatchMapping("/{recipeId}")
+    public ResponseEntity<RecipeDto> patchRecipe(@PathVariable Long recipeId, @Valid @RequestBody RecipeDto recipeUpdate) {
+        return new ResponseEntity<>(recipeService.patchRecipe(recipeId, recipeUpdate), HttpStatus.OK);
+    }
 
-        /*
-        private Double amount;
+    @DeleteMapping("/{recipeId}")
+    public ResponseEntity<HttpStatus> deleteRecipe(@PathVariable Long recipeId) {
+        recipeService.deleteRecipe(recipeId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-        private String unit;
+    @GetMapping("/{recipeId}")
+    public ResponseEntity<Recipe> getRecipe(@PathVariable Long recipeId) {
+        return new ResponseEntity<>(recipeService.getRecipe(recipeId), HttpStatus.OK);
+    }
 
-        private String ingredientType;
-         */
-        if (persistedIngredient.isPresent()) { // validate that ingredient is found in database
-            Ingredient validIngredient = persistedIngredient.get();
-            /*
-            Access the attributes of Ingredient
-             */
-            Double amount = ingredientToUpdate.getAmount();
-            String unit = ingredientToUpdate.getUnit();
-            String ingredientType = ingredientToUpdate.getIngredientType();
-            /*
-            If the property is non-null, then update the value
-             */
-            if (ingredientToUpdate.getAmount() != null) validIngredient.setAmount(ingredientToUpdate.getAmount());
-            if (ingredientToUpdate.getUnit() != null) validIngredient.setUnit(ingredientToUpdate.getUnit());
-            if (ingredientToUpdate.getIngredientType() !=  null) validIngredient.setIngredientType(ingredientToUpdate.getIngredientType());
+    /**
+     * Update an existing ingredient's amount, unit, and/or ingredient type.
+     * @param ingredientToUpdate deserialized JSON payload that contains <strong>only</strong> the edits requested for a persisted ingredient
+     * @return updated ingredient persisted in the recipe or resource not found status
+     */
+    @PatchMapping("/{ingredientId}/ingredient")
+    public ResponseEntity<IngredientDto> updateIngredient(@PathVariable Long ingredientId, @Valid @RequestBody IngredientDto ingredientToUpdate) {
+        return new ResponseEntity<>(recipeService.updateIngredient(ingredientId, ingredientToUpdate), HttpStatus.OK);
+    }
 
-            ingredientRepository.save(validIngredient);
+    /**
+     * add a new ingredient to an existing recipe
+     * @param recipeId id for recipe to host the new ingredient
+     * @param ingredient deserialized JSON payload of ingredient contents
+     * @return new ingredient persisted in the recipe or resource not found status
+     */
+    @PostMapping("/{recipeId}/ingredient")
+    public ResponseEntity<IngredientDto> addIngredient(@PathVariable Long recipeId, @RequestBody IngredientDto ingredient) {
+        return new ResponseEntity<>(recipeService.addIngredient(recipeId, ingredient), HttpStatus.OK);
+    }
 
-            return new ResponseEntity<>(validIngredient, HttpStatus.OK);
+    @DeleteMapping("/{ingredientId}/ingredient")
+    public ResponseEntity<HttpStatus> deleteIngredient(@PathVariable Long ingredientId) {
+        recipeService.deleteIngredient(ingredientId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/{recipeId}/ingredient/list")
+    public ResponseEntity<?> addIngredients(@PathVariable Long recipeId, @Validated @RequestBody List<IngredientDto> ingredientDtos) {
+        for (IngredientDto ingredientDto : ingredientDtos) {
+            recipeService.addIngredient(recipeId, ingredientDto);
         }
 
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-    @GetMapping("/ingredients")
-    public ResponseEntity<List<Ingredient>> listIngredients() {
-        return new ResponseEntity<>(ingredientRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(ingredientDtos,HttpStatus.OK);
     }
 
+    @GetMapping("/ingredients")
+    public ResponseEntity<List<Ingredient>> listIngredients() {
+        return new ResponseEntity<>(recipeService.listAllIngredients(), HttpStatus.OK);
+    }
+
+    /*
     @PostMapping("/create")
     public ResponseEntity<List<Recipe>> createRecipes() {
         Recipe newRecipe = new Recipe();
@@ -172,7 +188,7 @@ public class RecipeController {
         /*
         Endpoint can receive an invalid id so verify that the id to delete exists
          */
-        Optional<Ingredient> ingredient = ingredientRepository.findById(id);
+        /*Optional<Ingredient> ingredient = ingredientRepository.findById(id);
         if (ingredient.isPresent()) {
             ingredientRepository.deleteById(id);
             return new ResponseEntity<>(ingredient.get(), HttpStatus.OK);
@@ -191,7 +207,11 @@ public class RecipeController {
         }
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
+    }*/
 
 
 }
+
+// api path names should be nouns for CRUD, not verbs!
+// 404 - formatted payload, but does not exist
+// 400 - request is malformed

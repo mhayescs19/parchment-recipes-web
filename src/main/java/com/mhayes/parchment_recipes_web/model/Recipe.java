@@ -1,4 +1,4 @@
-package com.mhayes.parchment_recipes_web.entities.recipe;
+package com.mhayes.parchment_recipes_web.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,17 +23,20 @@ public class Recipe {
 
     private String title;
 
-    private String source_url;
+    private String sourceUrl;
+
+    private String imageUrl;
 
     private String author;
 
+    @Column(length = 750)
     private String description;
 
-    private Time prepTime;
+    private String prepTime;
 
-    private Time cookTime;
+    private String cookTime;
 
-    // totalTime is calculated from prep and cook time
+    private String totalTime;
 
     private String servingYield;
 

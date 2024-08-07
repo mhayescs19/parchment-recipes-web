@@ -1,4 +1,4 @@
-package com.mhayes.parchment_recipes_web.entities.recipe;
+package com.mhayes.parchment_recipes_web.model;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

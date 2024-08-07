@@ -1,4 +1,4 @@
-package com.mhayes.parchment_recipes_web.entities.recipe;
+package com.mhayes.parchment_recipes_web.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,20 +14,17 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @AllArgsConstructor
 @Data
 @Builder
-public class Ingredient {
+public class Direction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private Double amount;
-
-    private String unit;
-
-    private String ingredientType;
+    @Column(length = 500)
+    private String content;
 
     /*
-    JsonBackReference - prevents recursion on the reference entity, in this case the details of the recipe in the relationship is ignored to prevent infinite recursion
+    JsonBackReference - prevents recursion on the reference entity, in this case the details of the recipe in the relationship are ignored to prevent infinite recursion
     */
     @ManyToOne
     @JoinColumn(name = "recipe_id") // foreign key field
