@@ -20,10 +20,10 @@ import java.util.Optional;
 @Transactional // Transactional ensures that a segment of work is done in full before managing another task so data is not corrupted
 public class RecipeService {
     @Autowired
-    RecipeRepository recipeRepository;
+    private RecipeRepository recipeRepository;
 
     @Autowired
-    IngredientRepository ingredientRepository;
+    private IngredientRepository ingredientRepository;
 
     public List<Recipe> listAllRecipes() {
         return recipeRepository.findAll();
