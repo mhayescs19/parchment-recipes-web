@@ -23,7 +23,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(username).map(SecurityUser::new).orElseThrow(() -> new UsernameNotFoundException("username not found for: " + username));
     }
 
-    public void createUser(String oAuthUniqueId, String email, String fname, String lname) throws DuplicateUserException {
+    public void createUser(String oAuthUniqueId, String email, String fname, String lname, String roles) throws DuplicateUserException {
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isPresent()) {
@@ -35,6 +35,7 @@ public class UserService implements UserDetailsService {
                 .email(email)
                 .fname(fname)
                 .lname(lname)
+                .roles(roles)
                 .build();
 
         userRepository.save(newUser);

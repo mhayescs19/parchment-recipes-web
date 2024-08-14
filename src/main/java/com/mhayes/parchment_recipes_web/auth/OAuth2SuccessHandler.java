@@ -33,14 +33,17 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         Create a new user in the DB unless user already exists
          */
         try {
-            userService.createUser(uniqueId, email, fName, lName);
+            userService.createUser(uniqueId, email, fName, lName, "READ,ROLE_USER"); // grant basic roles on account creation
         } catch (DuplicateUserException e) {
             System.out.println("user already exists");
         } finally {
             // issue jwt
         }
 
+        // how to get authentication from persisted user in db
+        // how to get token to client from call to sign in with google
+
         // temporary redirect to valid auth
-        response.sendRedirect("/api/recipe/");
+        response.sendRedirect("/auth/token");
     }
 }
