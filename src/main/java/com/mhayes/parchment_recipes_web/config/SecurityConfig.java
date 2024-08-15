@@ -24,7 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableWebSecurity
 public class SecurityConfig {
 
-   @Value("${jwt.key}") // get value from .properties
+    @Value("${jwt.key}") // get value from .properties
     private String jwtKey;
 
     @Autowired
