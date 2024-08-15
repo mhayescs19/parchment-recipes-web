@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .csrf(csrf -> // CSRF should be enabled for endpoints using sessions to prevent malicious actions on user's behalf during session
                         csrf.ignoringRequestMatchers("/api/**")) // disable CSRF for APIs only. APIs are secured by JWTs, so CSRF can be disabled
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/auth/token").hasRole("USER"); // accessor must have user role to generate a token
+                    auth.requestMatchers("/auth/token").hasRole("USER"); // accessor must have user role to generate a token
                     auth.requestMatchers("/login", "/oauth2/**").permitAll(); // login route is accessible to anyone
                     auth.anyRequest().authenticated(); // any other endpoint requires authentication
                 })

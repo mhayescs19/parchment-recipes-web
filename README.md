@@ -449,5 +449,16 @@ In my development, I found that the standard .properties configuration (includin
 
 Resources: [FreeCodeCamp](https://www.freecodecamp.org/news/http-request-methods-explained/) | [Suhas Chatekar](https://medium.com/@suhas_chatekar/why-you-should-use-the-recommended-http-methods-in-your-rest-apis-981359828bf7)
 
+## Implementing Sign In With Google
+Users can sign in with Google will eventually be able to sign in from either the web interface or the mobile app. The user must sign in, but that status also must be reflected on the backend server.
 
+For signing on via a SwiftUI mobile app:
+1. Use Google sign in [dependencies](https://developers.google.com/identity/sign-in/ios/start-integrating#install_the_google_sign-in_dependencies_in_your_project) to handle log in
+2. Extract user ID token from a successful sign on
+3. Send the user ID token securely using HTTPS to the backend
+4. Verify the user ID token on the backend server using [Google API Client libraries](https://developers.google.com/api-client-library/java)
+5. Check if the user exists in the database; if not, create a new user
+6. Issue a JWT to that user and return the token to the mobile app
 
+### A Reflection: Client Concerns
+When researching this authentication flow I was insistent on managing the sign in strictly from the web server, either completely from the backend or via a web client. I realized using a web client would lead to issues in returning the JWT to the mobile client. Instead, using the mobile client to log in and then passing the ID token and verifying the log in via the backend makes issuing the JWT straightforward.
