@@ -2,7 +2,7 @@ package com.mhayes.parchment_recipes_web.exception;
 
 import com.mhayes.parchment_recipes_web.dto.enums.Resource;
 
-/** Instance of a findById request with an non-existing resource ID
+/** Instance of a findById request with a non-existing resource ID
  *
  */
 public class ResourceNotFoundException extends RuntimeException {
