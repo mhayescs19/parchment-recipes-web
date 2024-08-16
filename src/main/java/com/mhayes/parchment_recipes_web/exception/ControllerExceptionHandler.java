@@ -28,7 +28,7 @@ public class ControllerExceptionHandler {
         errorResponse.put("error", "field does not match payload format");
         errorResponse.put("invalid field", invalidField);
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST); // return 400 bad request
     }
 
     /**
@@ -43,6 +43,16 @@ public class ControllerExceptionHandler {
         errorResponse.put("error", e.getMessage());
         errorResponse.put("reason", "resource not found"); // exception should be abstracted from the consumer
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND); // return 404 not found
+    }
+
+    @ExceptionHandler(GoogleIdTokenValidationException.class)
+    public ResponseEntity<Map<String,String>> handleGoogleIdTokenValidationException(GoogleIdTokenValidationException e) {
+        Map<String,String> errorResponse = new HashMap<>();
+
+        errorResponse.put("error",e.getMessage());
+        errorResponse.put("reason", "google id validation failed");
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN); // return 401 authorized
     }
 }
