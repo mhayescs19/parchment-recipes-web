@@ -40,11 +40,12 @@ public class SecurityConfig {
                         csrf.ignoringRequestMatchers("/api/**")) // disable CSRF for APIs only. APIs are secured by JWTs, so CSRF can be disabled
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/auth/token").hasRole("USER"); // accessor must have user role to generate a token
+                    auth.requestMatchers("/auth/googleIdToken").permitAll(); // anyone can try to verify the google id token
                     auth.requestMatchers("/login", "/oauth2/**").permitAll(); // login route is accessible to anyone
                     auth.anyRequest().authenticated(); // any other endpoint requires authentication
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // create session for login, but not access to APIs
-                .userDetailsService(userService) // point to
+                .userDetailsService(userService) // point to users for authentication (?)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .oauth2Login(auth ->
                         auth.successHandler(oAuth2SuccessHandler)) // custom success handler to access OAuth2AuthenticationToken, compare against db and issue JWT
@@ -61,6 +62,6 @@ public class SecurityConfig {
     public JwtDecoder jwtDecoder() {
         byte[] bytes = jwtKey.getBytes();
         SecretKeySpec originalKey = new SecretKeySpec(bytes,0,bytes.length,"RSA");
-        return NimbusJwtDecoder.withSecretKey(originalKey).macAlgorithm(MacAlgorithm.HS512).build(); // use the same algorithm as the JWT is created with
+        return NimbusJwtDecoder.withSecretKey(originalKey).macAlgorithm(MacAlgorithm.HS256).build(); // use the same algorithm as the JWT is created with
     }
 }

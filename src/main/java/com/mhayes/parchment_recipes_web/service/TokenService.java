@@ -1,6 +1,5 @@
 package com.mhayes.parchment_recipes_web.service;
 
-import com.mhayes.parchment_recipes_web.model.Recipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,7 +34,7 @@ public class TokenService {
                 .claim("scope", scope)
                 .build();
 
-        JwtEncoderParameters encodeParams = JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS512).build(), claims);
+        JwtEncoderParameters encodeParams = JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS256).build(), claims);
         return jwtEncoder.encode(encodeParams).getTokenValue();
     }
 }
