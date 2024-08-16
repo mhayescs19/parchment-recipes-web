@@ -51,7 +51,7 @@ public class RecipeService {
         }
     }
 
-    public Recipe getRecipe(@PathVariable Long recipeId) {
+    public Recipe getRecipe(Long recipeId) {
         Optional<Recipe> recipe = recipeRepository.findById(recipeId);
         if (recipe.isPresent()) {
             return recipe.get();
